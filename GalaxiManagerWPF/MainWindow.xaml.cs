@@ -27,24 +27,6 @@ namespace GalaxiManagerWPF
         public MainWindow()
         {
             InitializeComponent();
-            ObservableCollection<BasicItem> items = new ObservableCollection<BasicItem>()
-            {
-                new BasicItem() { Name = "Yooo" }
-            };
-            listBx.ItemsSource = items;
-            DispatcherTimer timer = new DispatcherTimer
-            {
-                Interval = new TimeSpan(0, 0, 1)
-            };
-            timer.Tick += (object o, EventArgs e) =>
-            {
-                items.Add(new BasicItem() { Name = DateTime.Now.ToShortTimeString() });
-            };
-            timer.Start();
         }
-    }
-    public class BasicItem
-    {
-        public string Name { get; set; }
     }
 }

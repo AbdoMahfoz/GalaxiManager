@@ -94,5 +94,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GalaxiBackend\GalaxiBackend.csproj">
+      <Project>{df154d7e-a9c8-458e-999e-39be41ec4e99}</Project>
+      <Name>GalaxiBackend</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

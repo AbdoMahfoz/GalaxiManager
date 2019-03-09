@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace GalaxiBackend
 {
-    public class Class1
+    static public class Galaxi
     {
+
     }
 }

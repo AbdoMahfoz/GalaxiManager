@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using GalaxiBackend;
+using System.Threading;
 
 namespace GalaxiManagerWPF
 {
@@ -29,16 +30,31 @@ namespace GalaxiManagerWPF
         public MainWindow()
         {
             InitializeComponent();
+            ((Storyboard)CheckInOutPanel.Resources["ButtonReset"]).Completed += (object sender, EventArgs e) =>
+            {
+                CheckInButton.IsEnabled = false;
+            };
         }
         private async void SearchButtonPressed(object sender, RoutedEventArgs e)
         {
             CheckInSearchButton.IsEnabled = false;
+            if(CheckInButton.IsEnabled)
+            {
+                ((Storyboard)CheckInOutPanel.Resources["ButtonReset"]).Begin();
+                CheckInClientName.Content = "---";
+                CheckInClienYear.Content = "---";
+                CheckInEmail.Content = "---";
+                CheckInFacultyName.Content = "---";
+                CheckInStatus.Content = "---";
+                await Task.Run(() => { Thread.Sleep(500); });
+            }
             ((Storyboard)InputBorder.Resources["LoadingAnimation"]).Begin();
             if(!int.TryParse(CheckInSearchText.Text, out int n))
             {
                 MessageBox.Show("Invalid phone number");
+                ((Storyboard)InputBorder.Resources["LoadingAnimation"]).Stop();
+                ((Storyboard)InputBorder.Resources["EndingAnimation"]).Begin();
                 CheckInSearchButton.IsEnabled = true;
-                ((Storyboard)InputBorder.Resources["LoadingAnimation"]).AutoReverse = false;
                 return;
             }
             string Phonenumber = CheckInSearchText.Text;
@@ -60,7 +76,23 @@ namespace GalaxiManagerWPF
                 CheckInStatus.Content = (client.CheckedIn) ? "Checked-In" : "Not Checked-In";
             }
             CheckInSearchButton.IsEnabled = true;
-            ((Storyboard)InputBorder.Resources["LoadingAnimation"]).AutoReverse = false;
+            CheckInButton.IsEnabled = true;
+            ((Storyboard)InputBorder.Resources["LoadingAnimation"]).Stop();
+            ((Storyboard)InputBorder.Resources["EndingAnimation"]).Begin();
+            if(!client.CheckedIn)
+            {
+                CheckInButton.Content = "Check in!";
+                ((Storyboard)CheckInOutPanel.Resources["CheckInEnabled"]).Begin();
+            }
+            else
+            {
+                CheckInButton.Content = "Check out!";
+                ((Storyboard)CheckInOutPanel.Resources["CheckOutEnabled"]).Begin();
+            }
+        }
+        private void CheckInButtonPressed(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

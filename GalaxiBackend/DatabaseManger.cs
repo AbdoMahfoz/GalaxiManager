@@ -18,11 +18,17 @@ namespace GalaxiBackend
     }
     class ClientQuery : Query
     {
-        public new ClientQueryFilter Filter { get; set; }
+        public ClientQuery()
+        {
+            Filter = new ClientQueryFilter();
+        }
     }
     class FacultyQuery : Query
     {
-        public new FacultyQueryFilter Filter { get; set; }
+        public FacultyQuery()
+        {
+            Filter = new FacultyQueryFilter();
+        }
     }
     class Reader
     {
@@ -81,9 +87,9 @@ namespace GalaxiBackend
         static ResultType[] GetData<ResultType, QueryType>(params QueryType[] Queries) where QueryType : Query
         {
             string QueryText = "";
-            if(typeof(ResultType) == typeof(Client))
+            if (typeof(ResultType) == typeof(Client))
             {
-                QueryText = @"SELECT c.Phonenumber, c.Name, c.Email, c.Year, c.facultyid, f.Name
+                QueryText = @"SELECT c.Phonenumber, c.Name, c.Email, c.Year, c.facultyid, f.Name, c.checkedIn
                               FROM Clients c, Faculties f
                               WHERE c.facultyid = f.facultyid";
             }
@@ -111,7 +117,8 @@ namespace GalaxiBackend
                         Name = (string)reader[1],
                         Email = (string)reader[2],
                         Year = (int)reader[3],
-                        Faculty = new Faculty() { ID = (int)reader[4], Name = (string)reader[5] }
+                        Faculty = new Faculty() { ID = (int)reader[4], Name = (string)reader[5] },
+                        CheckedIn = (((string)reader[6]) == "T")
                     });
                 }
                 else

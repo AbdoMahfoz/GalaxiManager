@@ -8,6 +8,7 @@ namespace GalaxiBackend
         public Faculty Faculty { get; set; }
         public string Email { get; set; }
         public int Year { get; set; }
+        public bool CheckedIn { get; set; }
     }
     public class Faculty
     {

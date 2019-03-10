@@ -27,6 +27,7 @@ namespace GalaxiManagerWPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        Client CurrentActiveClient;
         public MainWindow()
         {
             InitializeComponent();
@@ -35,17 +36,22 @@ namespace GalaxiManagerWPF
                 CheckInButton.IsEnabled = false;
             };
         }
+        void ResetContent()
+        {
+            CheckInButton.Content = "Check in/out";
+            ((Storyboard)CheckInOutPanel.Resources["ButtonReset"]).Begin();
+            CheckInClientName.Content = "---";
+            CheckInClienYear.Content = "---";
+            CheckInEmail.Content = "---";
+            CheckInFacultyName.Content = "---";
+            CheckInStatus.Content = "---";
+        }
         private async void SearchButtonPressed(object sender, RoutedEventArgs e)
         {
             CheckInSearchButton.IsEnabled = false;
             if(CheckInButton.IsEnabled)
             {
-                ((Storyboard)CheckInOutPanel.Resources["ButtonReset"]).Begin();
-                CheckInClientName.Content = "---";
-                CheckInClienYear.Content = "---";
-                CheckInEmail.Content = "---";
-                CheckInFacultyName.Content = "---";
-                CheckInStatus.Content = "---";
+                ResetContent();
                 await Task.Run(() => { Thread.Sleep(500); });
             }
             ((Storyboard)InputBorder.Resources["LoadingAnimation"]).Begin();
@@ -59,6 +65,7 @@ namespace GalaxiManagerWPF
             }
             string Phonenumber = CheckInSearchText.Text;
             Client client = null;
+            bool HasCheckedIn = false;
             await Task.Run(() =>
             {
                 client = Galaxi.GetClient(Phonenumber);
@@ -69,17 +76,19 @@ namespace GalaxiManagerWPF
             }
             else
             {
+                CheckInHistory lastCheckIn = Galaxi.GetLastCheckin(client);
+                HasCheckedIn = !lastCheckIn.IsCheckedOut;
                 CheckInClientName.Content = client.Name;
                 CheckInClienYear.Content = client.Year.ToString();
                 CheckInEmail.Content = client.Email;
                 CheckInFacultyName.Content = client.Faculty.Name;
-                CheckInStatus.Content = (client.CheckedIn) ? "Checked-In" : "Not Checked-In";
+                CheckInStatus.Content = HasCheckedIn ? $"Checked-In at {lastCheckIn.CheckIn.ToShortTimeString()}" : "Not Checked-In";
             }
             CheckInSearchButton.IsEnabled = true;
             CheckInButton.IsEnabled = true;
             ((Storyboard)InputBorder.Resources["LoadingAnimation"]).Stop();
             ((Storyboard)InputBorder.Resources["EndingAnimation"]).Begin();
-            if(!client.CheckedIn)
+            if(!HasCheckedIn)
             {
                 CheckInButton.Content = "Check in!";
                 ((Storyboard)CheckInOutPanel.Resources["CheckInEnabled"]).Begin();
@@ -89,10 +98,30 @@ namespace GalaxiManagerWPF
                 CheckInButton.Content = "Check out!";
                 ((Storyboard)CheckInOutPanel.Resources["CheckOutEnabled"]).Begin();
             }
+            CurrentActiveClient = client;
         }
-        private void CheckInButtonPressed(object sender, RoutedEventArgs e)
+        private async void CheckInButtonPressed(object sender, RoutedEventArgs e)
         {
-
+            CheckInButton.IsEnabled = false;
+            CheckInSearchButton.IsEnabled = false;
+            if ((string)CheckInButton.Content == "Check in!")
+            {
+                await Task.Run(() =>
+                { 
+                    Galaxi.CheckInClient(CurrentActiveClient);
+                    MessageBox.Show("Checked-In Successfully!");
+                });
+            }
+            else
+            {
+                await Task.Run(() =>
+                {
+                    Galaxi.CheckOutClient(CurrentActiveClient);
+                    MessageBox.Show("Checked-Out Successfully!");
+                });
+            }
+            ResetContent();
+            CheckInSearchButton.IsEnabled = true;
         }
     }
 }

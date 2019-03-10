@@ -89,7 +89,7 @@ namespace GalaxiBackend
             string QueryText = "";
             if (typeof(ResultType) == typeof(Client))
             {
-                QueryText = @"SELECT c.Phonenumber, c.Name, c.Email, c.Year, c.facultyid, f.Name, c.checkedIn
+                QueryText = @"SELECT c.Phonenumber, c.Name, c.Email, c.Year, c.facultyid, f.Name
                               FROM Clients c, Faculties f
                               WHERE c.facultyid = f.facultyid";
             }
@@ -117,8 +117,7 @@ namespace GalaxiBackend
                         Name = (string)reader[1],
                         Email = (string)reader[2],
                         Year = (int)reader[3],
-                        Faculty = new Faculty() { ID = (int)reader[4], Name = (string)reader[5] },
-                        CheckedIn = (((string)reader[6]) == "T")
+                        Faculty = new Faculty() { ID = (int)reader[4], Name = (string)reader[5] }
                     });
                 }
                 else
@@ -143,6 +142,68 @@ namespace GalaxiBackend
         static public Faculty[] GetFaculties(params FacultyQuery[] Args)
         {
             return GetData<Faculty, FacultyQuery>(Args);
+        }
+        static public CheckInHistory[] GetCheckinHistory(string Phonenumber)
+        {
+            var reader = ExecuteQuery(@"SELECT CheckInDate, CheckOutDate
+                                        FROM CheckInHistory
+                                        WHERE Phonenumber = @num
+                                        ORDER BY CheckInDate DESC", new KeyValuePair<string, object>("num", Phonenumber));
+            List<CheckInHistory> res = new List<CheckInHistory>();
+            while(reader.Read())
+            {
+                res.Add(new CheckInHistory
+                {
+                    CheckIn = (DateTime)reader[0],
+                    CheckOut = reader[1] as DateTime?
+                });
+            }
+            reader.Close();
+            if (res.Count == 0)
+                return null;
+            return res.ToArray();
+        }
+        static public CheckInHistory GetLastCheckInHistory(string Phonenumber)
+        {
+            var reader = ExecuteQuery(@"SELECT CheckInDate, CheckOutDate
+                                        FROM CheckInHistory
+                                        WHERE Phonenumber = @num and CheckInDate = (SELECT max(CheckInDate)
+                                                                                    FROM CheckInHistory
+                                                                                    WHERE Phonenumber = @num)",
+                                        new KeyValuePair<string, object>("num", Phonenumber));
+            CheckInHistory res = null;
+            if (reader.Read())
+            {
+                res = new CheckInHistory
+                {
+                    CheckIn = (DateTime)reader[0],
+                    CheckOut = reader[1] as DateTime?
+                };
+            }
+            reader.Close();
+            return res;
+        }
+        static public void InsertIntoCheckInHistory(string Phonenumber, CheckInHistory history)
+        {
+            if(history.CheckOut == null)
+            {
+                ExecuteNonQuery(@"INSERT INTO CheckInHistory(Phonenumber, CheckInDate) Values(@num, @entry)",
+                                new KeyValuePair<string, object>[]
+                                {
+                                    new KeyValuePair<string, object>("num", Phonenumber),
+                                    new KeyValuePair<string, object>("entry", history.CheckIn)
+                                });
+            }
+            else
+            {
+                ExecuteNonQuery(@"UPDATE CheckInHistory SET CheckOutDate = @val WHERE Phonenumber = @num AND CheckInDate = @entry",
+                                new KeyValuePair<string, object>[]
+                                {
+                                    new KeyValuePair<string, object>("val", history.CheckOut),
+                                    new KeyValuePair<string, object>("num", Phonenumber),
+                                    new KeyValuePair<string, object>("entry", history.CheckIn)
+                                });
+            }
         }
     }
 }

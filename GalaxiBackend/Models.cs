@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace GalaxiBackend
 {
     public class Client
@@ -8,11 +10,16 @@ namespace GalaxiBackend
         public Faculty Faculty { get; set; }
         public string Email { get; set; }
         public int Year { get; set; }
-        public bool CheckedIn { get; set; }
     }
     public class Faculty
     {
         public int ID { get; set; }
         public string Name { get; set; }
+    }
+    public class CheckInHistory
+    {
+        public DateTime CheckIn { get;set; }
+        public DateTime? CheckOut { get; set; }
+        public bool IsCheckedOut { get => CheckOut != null; }
     }
 }

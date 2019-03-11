@@ -54,7 +54,8 @@ namespace GalaxiBackend
     static class DatabaseManager
     {
         static readonly string ConnectionString = $"Data Source=(LocalDB)\\MSSQLLocalDB;" +
-                                                  $"AttachDbFilename={Directory.GetCurrentDirectory()}\\GalaxiDB.mdf;" +
+                                                //$"AttachDbFilename={Directory.GetCurrentDirectory()}\\GalaxiDB.mdf;" +
+                                                  @"AttachDbFilename=D:\Projects\GalaxiManager\GalaxiBackend\GalaxiDB.mdf;"+
                                                   $"Integrated Security=True";
         static KeyValuePair<SqlCommand, SqlConnection> InitializeQuery(string Query, params KeyValuePair<string, object>[] args)
         {

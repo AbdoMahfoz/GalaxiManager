@@ -62,6 +62,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DatabaseInitializer.sql" />
     <Content Include="GalaxiDB.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

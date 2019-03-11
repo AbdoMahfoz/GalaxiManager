@@ -11,7 +11,7 @@
             <ColumnDefinition Width="0.25*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" Background="LightGray">
+        <StackPanel Name="NavigationPanel" Grid.Column="0" Background="LightGray">
             <Label Content="Navigation" HorizontalAlignment="Center"/>
             <Button Margin="10,20,10,0" Content="Check-in/out"/>
             <Button Margin="10,6,10,0" Content="Set-up pricing"/>
@@ -43,14 +43,14 @@
                 <RowDefinition Height="2*"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <StackPanel Background="WhiteSmoke">
-                <Label Content="Please enter a phone number" HorizontalAlignment="Center" Margin="0,30,0,0" FontSize="15"/>
+            <StackPanel VerticalAlignment="Center" Background="WhiteSmoke">
+                <Label Content="Please enter a phone number" HorizontalAlignment="Center" FontSize="15"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Name="PhoneInput" Margin="0,10,0,0">
                     <TextBox Name="CheckInSearchText" Margin="0,0,0,0" HorizontalAlignment="Center" Width="200" />
                     <Button Name="CheckInSearchButton" Click="SearchButtonPressed" Margin="10,0,0,0" Grid.Column="1" Content="Search" HorizontalAlignment="Center" Width="70"/>
                 </StackPanel>
             </StackPanel>
-            <Border Name="InputBorder" Width="300" Grid.Row="1" Background="White" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderBrush="Black" BorderThickness="1">
+            <Border Width="330" Name="InputBorder" Grid.Row="1" Background="White" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderBrush="Black" BorderThickness="1">
                 <Border.Resources>
                     <Storyboard x:Key="LoadingAnimation">
                         <DoubleAnimation Storyboard.TargetName="InputBorder"
@@ -74,17 +74,23 @@
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Label Content="Name: "/>
-                    <Label HorizontalAlignment="Center" Grid.Column="1" Content="---" Name="CheckInClientName" />
-                    <Label Grid.Row="1" Content="Year: "/>
-                    <Label Grid.Row="1" HorizontalAlignment="Center" Grid.Column="1" Content="---" Name="CheckInClienYear"/>
-                    <Label Grid.Row="2" Content="Email: "/>
-                    <Label Grid.Row="2" HorizontalAlignment="Center" Grid.Column="1" Content="---" Name="CheckInEmail" />
-                    <Label Grid.Row="3" Content="Faculty name: "/>
-                    <Label Grid.Row="3" HorizontalAlignment="Center" Grid.Column="1" Content="---" Name="CheckInFacultyName" />
-                    <Label Grid.Row="4" Content="Is checked in: "/>
-                    <Label Grid.Row="4" HorizontalAlignment="Center" Grid.Column="1" Content="---" Name="CheckInStatus" />
+                    <Label VerticalAlignment="Center" Content="Name: "/>
+                    <Label VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Content="---" Name="CheckInClientName" />
+                    <Label VerticalAlignment="Center" Grid.Row="1" Content="Year: "/>
+                    <Label VerticalAlignment="Center" Grid.Row="1" HorizontalAlignment="Center" Grid.Column="1" Content="---" Name="CheckInClienYear"/>
+                    <Label VerticalAlignment="Center" Grid.Row="2" Content="Email: "/>
+                    <Label VerticalAlignment="Center" Grid.Row="2" HorizontalAlignment="Center" Grid.Column="1" Content="---" Name="CheckInEmail" />
+                    <Label VerticalAlignment="Center" Grid.Row="3" Content="Faculty name: "/>
+                    <Label VerticalAlignment="Center" Grid.Row="3" HorizontalAlignment="Center" Grid.Column="1" Content="---" Name="CheckInFacultyName" />
+                    <Label VerticalAlignment="Center" Grid.Row="4" Content="Is checked in: "/>
+                    <Label VerticalAlignment="Center" Grid.Row="4" HorizontalAlignment="Center" Grid.Column="1" Content="---" Name="CheckInStatus" />
+                    <Label VerticalAlignment="Center" Grid.Row="5" Content="Expected stay: "/>
+                    <Label VerticalAlignment="Center" Grid.Row="5" HorizontalAlignment="Center" Grid.Column="1" Content="---" Name="ExpectedStay" />
+                    <Label VerticalAlignment="Center" Grid.Row="6" Content="Expected payment: "/>
+                    <Label VerticalAlignment="Center" Grid.Row="6" HorizontalAlignment="Center" Grid.Column="1" Content="---" Name="ExpectedPayment" />
                 </Grid>
             </Border>
             <Button Click="CheckInButtonPressed" Name="CheckInButton" Content="Check in/out" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" IsEnabled="False"/>

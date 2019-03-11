@@ -22,9 +22,6 @@ using System.Threading;
 
 namespace GalaxiManagerWPF
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         Client CurrentActiveClient;
@@ -76,7 +73,11 @@ namespace GalaxiManagerWPF
             }
             else
             {
-                CheckInHistory lastCheckIn = Galaxi.GetLastCheckin(client);
+                CheckInHistory lastCheckIn = null;
+                await Task.Run(() =>
+                {
+                    lastCheckIn = Galaxi.GetLastCheckin(client);
+                });
                 HasCheckedIn = !lastCheckIn.IsCheckedOut;
                 CheckInClientName.Content = client.Name;
                 CheckInClienYear.Content = client.Year.ToString();

@@ -17,7 +17,7 @@
             <Button Margin="10,6,10,0" Content="Set-up pricing"/>
             <Button Margin="10,6,10,0" Content="Add new things"/>
         </StackPanel>
-        <Grid Name="CheckInOutPanel" Background="WhiteSmoke" Grid.Column="1">
+        <Grid Name="CheckInOutPanel" Background="WhiteSmoke" Grid.Column="1" Visibility="Hidden">
             <Grid.Resources>
                 <Storyboard x:Key="CheckInEnabled">
                     <ColorAnimation Storyboard.TargetName="CheckInButton" Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"

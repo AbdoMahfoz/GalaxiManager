@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -11,24 +9,23 @@ namespace GalaxiBackend
 {
     enum ClientQueryFilter { Phonenumber, name, email, year, facultyid }
     enum FacultyQueryFilter { facultyid, name }
+    enum PaymentQueryFilter { id, name, price }
     abstract class Query
     {
-        public dynamic Filter;
+        public dynamic Filter = null;
         public object Value;
     }
     class ClientQuery : Query
     {
-        public ClientQuery()
-        {
-            Filter = new ClientQueryFilter();
-        }
+        public new ClientQueryFilter Filter { get => Filter; set => base.Filter = value; }
     }
     class FacultyQuery : Query
     {
-        public FacultyQuery()
-        {
-            Filter = new FacultyQueryFilter();
-        }
+        public new FacultyQueryFilter Filter { get => Filter; set => base.Filter = value; }
+    }
+    class PaymentQuery : Query
+    {
+        public new PaymentQueryFilter Filter { get => Filter; set => base.Filter = value; }
     }
     class Reader
     {
@@ -54,8 +51,8 @@ namespace GalaxiBackend
     static class DatabaseManager
     {
         static readonly string ConnectionString = $"Data Source=(LocalDB)\\MSSQLLocalDB;" +
-                                                //$"AttachDbFilename={Directory.GetCurrentDirectory()}\\GalaxiDB.mdf;" +
-                                                  @"AttachDbFilename=D:\Projects\GalaxiManager\GalaxiBackend\GalaxiDB.mdf;"+
+                                                  $"AttachDbFilename={Directory.GetCurrentDirectory()}\\GalaxiDB.mdf;" +
+                                                //@"AttachDbFilename=D:\Projects\GalaxiManager\GalaxiBackend\GalaxiDB.mdf;"+
                                                   $"Integrated Security=True";
         static KeyValuePair<SqlCommand, SqlConnection> InitializeQuery(string Query, params KeyValuePair<string, object>[] args)
         {
@@ -94,10 +91,16 @@ namespace GalaxiBackend
                               FROM Clients c, Faculties f
                               WHERE c.facultyid = f.facultyid";
             }
-            else
+            else if(typeof(ResultType) == typeof(Faculty))
             {
                 QueryText = @"SELECT c.facultyid, c.Name
                               FROM Faculties c
+                              WHERE 0=0";
+            }
+            else
+            {
+                QueryText = @"SELECT c.id, c.name, c.price, c.stock
+                              FROM Payments c
                               WHERE 0=0";
             }
             List<KeyValuePair<string, object>> args = new List<KeyValuePair<string, object>>();
@@ -121,12 +124,22 @@ namespace GalaxiBackend
                         Faculty = new Faculty() { ID = (int)reader[4], Name = (string)reader[5] }
                     });
                 }
-                else
+                else if(typeof(ResultType) == typeof(Faculty))
                 {
                     res.Add(new Faculty()
                     {
                         ID = (int)reader[0],
                         Name = (string)reader[1]
+                    });
+                }
+                else
+                {
+                    res.Add(new Payment()
+                    {
+                        ID = (int)reader[0],
+                        Name = (string)reader[1],
+                        Price = (float)reader[2],
+                        Stock = (int)reader[3]
                     });
                 }
             }
@@ -144,19 +157,52 @@ namespace GalaxiBackend
         {
             return GetData<Faculty, FacultyQuery>(Args);
         }
+        static public Payment[] GetPayments(params PaymentQuery[] Args)
+        {
+            return GetData<Payment, PaymentQuery>(Args);
+        }
+        static public Purchase[] GetAllPaymentsOfClient(Client client)
+        {
+            var reader = ExecuteQuery(@"SELECT p.id, p.name, p.price, p.stock, c.PaidPrice, c.Amount
+                                        FROM Payments p, PaymentsCheckin c
+                                        WHERE c.Phonenumber = @num AND c.CheckInDate = (SELECT max(CheckInDate)
+                                                                                        FROM CheckInHistory
+                                                                                        WHERE Phonenumber = @num) AND p.id = c.Paymentid",
+                                      new KeyValuePair<string, object>("num", client.Phonenumber));
+            List<Purchase> res = new List<Purchase>();
+            while(reader.Read())
+            {
+                res.Add(new Purchase()
+                {
+                    BasePayment = new Payment()
+                    {
+                        ID = (int)reader[0],
+                        Name = (string)reader[1],
+                        Price = (float)reader[2],
+                        Stock = (int)reader[3]
+                    },
+                    PaidPrice = (float)reader[4],
+                    Amount = (int)reader[5]
+                });
+            }
+            reader.Close();
+            return res.ToArray();
+        }
         static public CheckInHistory[] GetCheckinHistory(string Phonenumber)
         {
-            var reader = ExecuteQuery(@"SELECT CheckInDate, CheckOutDate
+            var reader = ExecuteQuery(@"SELECT CheckInDate, CheckOutDate, TotalPrice
                                         FROM CheckInHistory
                                         WHERE Phonenumber = @num
-                                        ORDER BY CheckInDate DESC", new KeyValuePair<string, object>("num", Phonenumber));
+                                        ORDER BY CheckInDate DESC", 
+                                        new KeyValuePair<string, object>("num", Phonenumber));
             List<CheckInHistory> res = new List<CheckInHistory>();
             while(reader.Read())
             {
                 res.Add(new CheckInHistory
                 {
                     CheckIn = (DateTime)reader[0],
-                    CheckOut = reader[1] as DateTime?
+                    CheckOut = reader[1] as DateTime?,
+                    TotalPrice = (reader[2].GetType() != typeof(float)) ? 0 : (float)reader[2]
                 });
             }
             reader.Close();
@@ -166,7 +212,7 @@ namespace GalaxiBackend
         }
         static public CheckInHistory GetLastCheckInHistory(string Phonenumber)
         {
-            var reader = ExecuteQuery(@"SELECT CheckInDate, CheckOutDate
+            var reader = ExecuteQuery(@"SELECT CheckInDate, CheckOutDate, TotalPrice
                                         FROM CheckInHistory
                                         WHERE Phonenumber = @num and CheckInDate = (SELECT max(CheckInDate)
                                                                                     FROM CheckInHistory
@@ -178,7 +224,8 @@ namespace GalaxiBackend
                 res = new CheckInHistory
                 {
                     CheckIn = (DateTime)reader[0],
-                    CheckOut = reader[1] as DateTime?
+                    CheckOut = reader[1] as DateTime?,
+                    TotalPrice = (reader[2].GetType() != typeof(float))? 0 : (float)reader[2]
                 };
             }
             reader.Close();
@@ -189,22 +236,55 @@ namespace GalaxiBackend
             if(history.CheckOut == null)
             {
                 ExecuteNonQuery(@"INSERT INTO CheckInHistory(Phonenumber, CheckInDate) Values(@num, @entry)",
-                                new KeyValuePair<string, object>[]
-                                {
-                                    new KeyValuePair<string, object>("num", Phonenumber),
-                                    new KeyValuePair<string, object>("entry", history.CheckIn)
-                                });
+                                new KeyValuePair<string, object>("num", Phonenumber),
+                                new KeyValuePair<string, object>("entry", history.CheckIn));
             }
             else
             {
                 ExecuteNonQuery(@"UPDATE CheckInHistory SET CheckOutDate = @val WHERE Phonenumber = @num AND CheckInDate = @entry",
-                                new KeyValuePair<string, object>[]
-                                {
-                                    new KeyValuePair<string, object>("val", history.CheckOut),
-                                    new KeyValuePair<string, object>("num", Phonenumber),
-                                    new KeyValuePair<string, object>("entry", history.CheckIn)
-                                });
+                                new KeyValuePair<string, object>("val", history.CheckOut),
+                                new KeyValuePair<string, object>("num", Phonenumber),
+                                new KeyValuePair<string, object>("entry", history.CheckIn));
             }
+        }
+        static public void AddPaymentToClient(string Phonenumber, int Paymentid, int Amount, float? Price = null)
+        {
+            if(Price is null)
+            {
+                Price = GetPayments(new PaymentQuery { Filter = PaymentQueryFilter.id, Value = Paymentid })[0].Price;
+            }
+            ExecuteNonQuery(@"INSERT INTO PaymentsCheckin VALUES(@payment, @num, (SELECT max(CheckInDate)
+                                                                                  FROM CheckInHistory
+                                                                                  WHERE Phonenumber = @num), @price, @amount)",
+                            new KeyValuePair<string, object>("payment", Paymentid),
+                            new KeyValuePair<string, object>("num", Phonenumber),
+                            new KeyValuePair<string, object>("price", Price),
+                            new KeyValuePair<string, object>("amount", Amount));
+            ExecuteNonQuery(@"UPDATE TABLE Payments SET stock = stock - @amount WHERE id = @payment",
+                            new KeyValuePair<string, object>("amount", Amount),
+                            new KeyValuePair<string, object>("payment", Paymentid));
+        }
+        static public void RemovePaymentFromClient(string Phonenumber, int Paymentid)
+        {
+            var reader = ExecuteQuery(@"SELECT Amount 
+                                        FROM PaymentsCheckIn
+                                        WHERE Paymentid = @payment AND Phonenumber = @num AND CheckInDate = (SELECT max(CheckInDate)
+                                                                                                             FROM CheckInHistory
+                                                                                                             WHERE Phonenumber = @num)",
+                                      new KeyValuePair<string, object>("payment", Paymentid),
+                                      new KeyValuePair<string, object>("num", Phonenumber));
+            reader.Read();
+            int Stock = (int)reader[0];
+            reader.Close();
+            ExecuteNonQuery(@"UPDATE Payments SET stock = stock + @val WHERE id = @payment",
+                            new KeyValuePair<string, object>("val", Stock),
+                            new KeyValuePair<string, object>("payment", Paymentid));
+            ExecuteNonQuery(@"DELETE FROM PaymentsCheckIn 
+                              WHERE Paymentid = @payment AND Phonenumber = @num AND CheckInDate = (SELECT max(CheckInDate)
+                                                                                                   FROM CheckInHistory
+                                                                                                   WHERE Phonenumber = @num)",
+                            new KeyValuePair<string, object>("payment", Paymentid),
+                            new KeyValuePair<string, object>("num", Phonenumber));
         }
     }
 }

@@ -137,7 +137,7 @@ namespace GalaxiManagerWPF
             else
             {
                 Storyboard storyboard = (Storyboard)CurrentActivePanel.Resources["FadeOut"];
-                storyboard.Completed += (object Sender, EventArgs eventArgs) =>
+                storyboard.Completed += (object sender, EventArgs e) =>
                 {
                     CurrentActivePanel.Visibility = Visibility.Hidden;
                     NewPanel.Opacity = 0.0;

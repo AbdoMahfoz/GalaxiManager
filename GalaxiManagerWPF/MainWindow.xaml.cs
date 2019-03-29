@@ -25,6 +25,7 @@ namespace GalaxiManagerWPF
     public partial class MainWindow : Window
     {
         Client CurrentActiveClient;
+        Panel CurrentActivePanel = null;
         public MainWindow()
         {
             InitializeComponent();
@@ -123,6 +124,39 @@ namespace GalaxiManagerWPF
             }
             ResetContent();
             CheckInSearchButton.IsEnabled = true;
+        }
+        private void ApplyNavigation(Panel NewPanel)
+        {
+            if (CurrentActivePanel == null)
+            {
+                NewPanel.Opacity = 0.0;
+                NewPanel.Visibility = Visibility.Visible;
+                CurrentActivePanel = NewPanel;
+                ((Storyboard)CurrentActivePanel.Resources["FadeIn"]).Begin();
+            }
+            else
+            {
+                Storyboard storyboard = (Storyboard)CurrentActivePanel.Resources["FadeOut"];
+                storyboard.Completed += (object Sender, EventArgs eventArgs) =>
+                {
+                    CurrentActivePanel.Visibility = Visibility.Hidden;
+                    NewPanel.Opacity = 0.0;
+                    NewPanel.Visibility = Visibility.Visible;
+                    CurrentActivePanel = NewPanel;
+                    ((Storyboard)CurrentActivePanel.Resources["FadeIn"]).Begin();
+                };
+                storyboard.Begin();
+            }
+        }
+        private void NavigationClick(object sender, RoutedEventArgs e)
+        {
+            Button NavButton = (Button)sender;
+            switch(NavButton.Name)
+            {
+                case "NavigationCheckInOutButton":
+                    ApplyNavigation(CheckInOutPanel);
+                    break;
+            }
         }
     }
 }

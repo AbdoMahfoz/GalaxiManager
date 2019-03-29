@@ -6,19 +6,44 @@
         xmlns:local="clr-namespace:GalaxiManagerWPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="588.5">
-    <Grid>
+    <Grid Background="WhiteSmoke">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.25*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <StackPanel Name="NavigationPanel" Grid.Column="0" Background="LightGray">
             <Label Content="Navigation" HorizontalAlignment="Center"/>
-            <Button Margin="10,20,10,0" Content="Check-in/out"/>
+            <Button Name="NavigationCheckInOutButton" Click="NavigationClick" Margin="10,20,10,0" Content="Check-in/out"/>
             <Button Margin="10,6,10,0" Content="Set-up pricing"/>
             <Button Margin="10,6,10,0" Content="Add new things"/>
         </StackPanel>
-        <Grid Name="CheckInOutPanel" Background="WhiteSmoke" Grid.Column="1" Visibility="Hidden">
+        <Grid Name="CheckInOutPanel" Background="WhiteSmoke" Grid.Column="1" Visibility="Hidden" RenderTransformOrigin="0.5, 0.5">
+            <Grid.RenderTransform>
+                <ScaleTransform x:Name="CheckInOutPanelScale" ScaleX="1" ScaleY="1"/>
+            </Grid.RenderTransform>
             <Grid.Resources>
+                <Storyboard x:Key="FadeIn">
+                    <DoubleAnimation Storyboard.TargetName="CheckInOutPanelScale" Storyboard.TargetProperty="ScaleX"
+                                 Duration="0:0:0.5" From="0.7" To="1"
+                                 DecelerationRatio="1"/>
+                    <DoubleAnimation Storyboard.TargetName="CheckInOutPanelScale" Storyboard.TargetProperty="ScaleY"
+                                 Duration="0:0:0.5" From="0.7" To="1"
+                                 DecelerationRatio="1"/>
+                    <DoubleAnimation Storyboard.TargetName="CheckInOutPanel" Storyboard.TargetProperty="Opacity"
+                                 Duration="0:0:1" From="0" To="1"
+                                 DecelerationRatio="1"/>
+                </Storyboard>
+                <Storyboard x:Key="FadeOut">
+                    <DoubleAnimation Storyboard.TargetName="CheckInOutPanelScale" Storyboard.TargetProperty="ScaleX"
+                                 Duration="0:0:0.5" From="1" To="0.7"
+                                 DecelerationRatio="1"/>
+                    <DoubleAnimation Storyboard.TargetName="CheckInOutPanelScale" Storyboard.TargetProperty="ScaleY"
+                                 Duration="0:0:0.5" From="1" To="0.7"
+                                 DecelerationRatio="1"/>
+                    <DoubleAnimation Storyboard.TargetName="CheckInOutPanel" Storyboard.TargetProperty="Opacity"
+                                 Duration="0:0:0.5" From="1" To="0"
+                                 DecelerationRatio="1"/>
+                </Storyboard>
                 <Storyboard x:Key="CheckInEnabled">
                     <ColorAnimation Storyboard.TargetName="CheckInButton" Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
                                     To="Green" Duration="0:0:0.3"/>

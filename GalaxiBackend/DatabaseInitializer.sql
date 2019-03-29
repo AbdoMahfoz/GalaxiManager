@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Faculties] (
     [facultyid] INT           NOT NULL,
     [name]      VARCHAR (MAX) NOT NULL,
-    PRIMARY KEY CLUSTERED ([facultyid] ASC)
+    CONSTRAINT [PK_Faculties] PRIMARY KEY CLUSTERED ([facultyid] ASC)
 );
 
 CREATE TABLE [dbo].[Clients] (
@@ -10,8 +10,8 @@ CREATE TABLE [dbo].[Clients] (
     [facultyid]   INT           NOT NULL,
     [email]       VARCHAR (MAX) NULL,
     [year]        INT           NULL,
-    PRIMARY KEY CLUSTERED ([phoneNumber] ASC),
-    FOREIGN KEY ([facultyid]) REFERENCES [dbo].[Faculties] ([facultyid])
+    CONSTRAINT [PK_Clients] PRIMARY KEY CLUSTERED ([phoneNumber] ASC),
+    CONSTRAINT [FK_ClientsFaculties] FOREIGN KEY ([facultyid]) REFERENCES [dbo].[Faculties] ([facultyid])
 );
 
 CREATE TABLE [dbo].[CheckInHistory] (
@@ -27,7 +27,8 @@ CREATE TABLE [dbo].[Payments] (
     [Id]    INT           NOT NULL,
     [name]  VARCHAR (MAX) NOT NULL,
     [price] FLOAT (53)    NOT NULL,
-    PRIMARY KEY CLUSTERED ([Id] ASC)
+    [stock] INT NULL, 
+    CONSTRAINT [PK_Payments] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 
 CREATE TABLE [dbo].[PaymentsCheckin] (
@@ -35,8 +36,8 @@ CREATE TABLE [dbo].[PaymentsCheckin] (
     [Phonenumber] CHAR (11)  NOT NULL,
     [CheckInDate] DATETIME   NOT NULL,
     [PaidPrice]   FLOAT (53) NULL,
+    [Amount]      INT        NULL,
     CONSTRAINT [pk_paymentsCheckin] PRIMARY KEY CLUSTERED ([Paymentid] ASC, [Phonenumber] ASC, [CheckInDate] ASC),
     CONSTRAINT [fk_paymentsCheckin_Clients_CheckInHistory] FOREIGN KEY ([Phonenumber], [CheckInDate]) REFERENCES [dbo].[CheckInHistory] ([Phonenumber], [CheckInDate]),
     CONSTRAINT [fk_paymentsCheckin_Payments] FOREIGN KEY ([Paymentid]) REFERENCES [dbo].[Payments] ([Id])
 );
-

@@ -52,5 +52,9 @@ namespace GalaxiBackend
             lastCheckIn.CheckOut = DateTime.Now;
             DatabaseManager.InsertIntoCheckInHistory(client.Phonenumber, lastCheckIn);
         }
+        static public Payment[] GetAllPayments()
+        {
+            return DatabaseManager.GetPayments();
+        }
     }
 }

@@ -50,7 +50,7 @@ namespace GalaxiManagerWPF
             if(CheckInButton.IsEnabled)
             {
                 ResetContent();
-                await Task.Run(() => { Thread.Sleep(500); });
+                await Task.Delay(500);
             }
             ((Storyboard)InputBorder.Resources["LoadingAnimation"]).Begin();
             if(!int.TryParse(CheckInSearchText.Text, out int n))
@@ -134,7 +134,7 @@ namespace GalaxiManagerWPF
                 CurrentActivePanel = NewPanel;
                 ((Storyboard)CurrentActivePanel.Resources["FadeIn"]).Begin();
             }
-            else
+            else if(CurrentActivePanel != NewPanel)
             {
                 Storyboard storyboard = (Storyboard)CurrentActivePanel.Resources["FadeOut"];
                 storyboard.Completed += (object sender, EventArgs e) =>
@@ -156,6 +156,27 @@ namespace GalaxiManagerWPF
                 case "NavigationCheckInOutButton":
                     ApplyNavigation(CheckInOutPanel);
                     break;
+                case "NavigationStockReportButton":
+                    ApplyNavigation(StockReportPanel);
+                    break;
+            }
+        }
+        private async void StockReportPanel_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if(StockReportPanel.Visibility == Visibility.Visible)
+            {
+                Payment[] payments = null;
+                await Task.Run(() =>
+                {
+                    payments = Galaxi.GetAllPayments();
+                });
+                ObservableCollection<Payment> paymentsList = new ObservableCollection<Payment>();
+                StockReportItems.ItemsSource = paymentsList;
+                foreach(Payment payment in payments)
+                {
+                    paymentsList.Add(payment);
+                    await Task.Delay(100);
+                }
             }
         }
     }

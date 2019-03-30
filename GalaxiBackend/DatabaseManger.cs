@@ -134,13 +134,12 @@ namespace GalaxiBackend
                 }
                 else
                 {
-                    res.Add(new Payment()
-                    {
-                        ID = (int)reader[0],
-                        Name = (string)reader[1],
-                        Price = (float)reader[2],
-                        Stock = (int)reader[3]
-                    });
+                    Payment p = new Payment();
+                    p.ID = (int)reader[0];
+                    p.Name = (string)reader[1];
+                    p.Price = (float)((double)reader[2]);
+                    p.Stock = (int)reader[3];
+                    res.Add(p);
                 }
             }
             reader.Close();

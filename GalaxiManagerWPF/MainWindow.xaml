@@ -5,23 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GalaxiManagerWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="588.5"
+        Title="Galaxi Co-Working Space" Height="450" Width="588.5"
         Name="theMainWindow">
-    <Grid Background="WhiteSmoke">
+    <Grid Background="LightGray">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.25*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <StackPanel Name="NavigationPanel" Grid.Column="0" Background="LightGray">
-            <Label Margin="0,10,0,10" Content="Navigation" FontStyle="Italic" FontWeight="Bold" HorizontalAlignment="Center"/>
-            <GroupBox Margin="5,0,5,0" Header="Main" BorderBrush="Black">
+        <StackPanel Name="NavigationPanel" Grid.Column="0">
+            <StackPanel.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF2B1B53" Offset="0"/>
+                    <GradientStop Color="#FF5B2A6E" Offset="1"/>
+                </LinearGradientBrush>
+            </StackPanel.Background>
+            <Label Margin="0,10,0,10" Content="Galaxi" FontStyle="Italic" FontWeight="Bold" HorizontalAlignment="Center" Foreground="White"/>
+            <GroupBox Margin="5,0,4.8,0" Header="Main" Foreground="White">
                 <StackPanel>
-                    <Button Name="NavigationCheckInOutButton" Click="NavigationClick" Margin="5,6,5,6" Content="Check-in/out"/>
+                    <Button x:Name="NavigationCheckInOutButton" Click="NavigationClick" Margin="5,6,5,6" Content="Check-in/out"/>
                 </StackPanel>
             </GroupBox>
-            <GroupBox Margin="5,0,5,0" Header="Stock" BorderBrush="Black">
+            <GroupBox Margin="5,0,4.8,0" Header="Stock" BorderBrush="Black" Foreground="White">
                 <StackPanel>
-                    <Button Name="NavigationStockReportButton" Click="NavigationClick" Margin="5,6,5,0" Content="Stock report"/>
+                    <Button x:Name="NavigationStockReportButton" Click="NavigationClick" Margin="5,6,5,0" Content="Stock report"/>
                     <Button Margin="5,6,5,6" Content="Add To Stock"/>
                 </StackPanel>
             </GroupBox>
@@ -215,5 +221,6 @@
                 </Grid>
             </Grid>
         </Grid>
+        <Image HorizontalAlignment="Right" VerticalAlignment="Bottom"  Source="E:\Design\Galaxi\Galaxi-Co-Logo-Web-Text-Below.png" Grid.Column="1" Width="100"/>
     </Grid>
 </Window>

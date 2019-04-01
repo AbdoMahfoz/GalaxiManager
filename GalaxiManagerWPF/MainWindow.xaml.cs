@@ -54,7 +54,7 @@ namespace GalaxiManagerWPF
                 await Task.Delay(500);
             }
             ((Storyboard)InputBorder.Resources["LoadingAnimation"]).Begin();
-            if(!int.TryParse(CheckInSearchText.Text, out int n))
+            if(!int.TryParse(CheckInSearchText.Text, out int n) || n<0)
             {
                 MessageBox.Show("Invalid phone number");
                 ((Storyboard)InputBorder.Resources["LoadingAnimation"]).Stop();

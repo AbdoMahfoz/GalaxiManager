@@ -79,7 +79,14 @@ namespace GalaxiManagerWPF
                 {
                     lastCheckIn = Galaxi.GetLastCheckin(client);
                 });
-                HasCheckedIn = !lastCheckIn.IsCheckedOut;
+                if (lastCheckIn == null)
+                {
+                    HasCheckedIn = false;
+                }
+                else
+                {
+                    HasCheckedIn = !lastCheckIn.IsCheckedOut;
+                }
                 CheckInClientName.Content = client.Name;
                 CheckInClienYear.Content = client.Year.ToString();
                 CheckInEmail.Content = client.Email;
@@ -172,6 +179,7 @@ namespace GalaxiManagerWPF
                 });
                 ObservableCollection<Payment> paymentsList = new ObservableCollection<Payment>();
                 StockReportItems.ItemsSource = paymentsList;
+                
                 foreach(Payment payment in payments)
                 {
                     paymentsList.Add(payment);

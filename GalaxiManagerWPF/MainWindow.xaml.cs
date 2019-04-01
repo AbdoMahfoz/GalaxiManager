@@ -46,6 +46,7 @@ namespace GalaxiManagerWPF
         }
         private async void SearchButtonPressed(object sender, RoutedEventArgs e)
         {
+            bool clientFound = false;
             CheckInSearchButton.IsEnabled = false;
             if(CheckInButton.IsEnabled)
             {
@@ -74,6 +75,7 @@ namespace GalaxiManagerWPF
             }
             else
             {
+                clientFound = true;
                 CheckInHistory lastCheckIn = null;
                 await Task.Run(() =>
                 {
@@ -94,7 +96,10 @@ namespace GalaxiManagerWPF
                 CheckInStatus.Content = HasCheckedIn ? $"Checked-In at {lastCheckIn.CheckIn.ToShortTimeString()}" : "Not Checked-In";
             }
             CheckInSearchButton.IsEnabled = true;
+            if(clientFound)
             CheckInButton.IsEnabled = true;
+            else
+            CheckInButton.IsEnabled = false;
             ((Storyboard)InputBorder.Resources["LoadingAnimation"]).Stop();
             ((Storyboard)InputBorder.Resources["EndingAnimation"]).Begin();
             if(!HasCheckedIn)

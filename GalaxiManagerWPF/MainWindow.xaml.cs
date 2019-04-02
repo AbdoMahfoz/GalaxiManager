@@ -184,7 +184,11 @@ namespace GalaxiManagerWPF
                 });
                 ObservableCollection<Payment> paymentsList = new ObservableCollection<Payment>();
                 StockReportItems.ItemsSource = paymentsList;
-                
+                if (payments == null)
+                {
+                    MessageBox.Show("No stock Available !");
+                    return;
+                }
                 foreach(Payment payment in payments)
                 {
                     paymentsList.Add(payment);

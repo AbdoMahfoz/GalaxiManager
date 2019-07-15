@@ -32,7 +32,7 @@
                 </StackPanel>
             </GroupBox>
         </StackPanel>
-        <Grid Name="CheckInOutPanel" Background="WhiteSmoke" Grid.Column="1" Visibility="Hidden" RenderTransformOrigin="0.5, 0.5">
+        <Grid Name="CheckInOutPanel" Background="LightGray" Grid.Column="1" Visibility="Hidden" RenderTransformOrigin="0.5, 0.5">
             <Grid.RenderTransform>
                 <ScaleTransform x:Name="CheckInOutPanelScale" ScaleX="1" ScaleY="1"/>
             </Grid.RenderTransform>
@@ -83,7 +83,7 @@
                 <RowDefinition Height="2*"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <StackPanel VerticalAlignment="Center" Background="WhiteSmoke">
+            <StackPanel VerticalAlignment="Center" Background="LightGray">
                 <Label Content="Please enter a phone number" HorizontalAlignment="Center" FontSize="15"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Name="PhoneInput" Margin="0,10,0,0">
                     <TextBox Name="CheckInSearchText" Margin="0,0,0,0" HorizontalAlignment="Center" Width="200" />
@@ -135,7 +135,7 @@
             </Border>
             <Button Click="CheckInButtonPressed" Name="CheckInButton" Content="Check in/out" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" IsEnabled="False"/>
         </Grid>
-        <Grid Name="StockReportPanel" Background="WhiteSmoke" Grid.Column="1" Visibility="Hidden" RenderTransformOrigin="0.5, 0.5"
+        <Grid Name="StockReportPanel" Background="LightGray" Grid.Column="1" Visibility="Hidden" RenderTransformOrigin="0.5, 0.5"
               IsVisibleChanged="StockReportPanel_IsVisibleChanged">
             <Grid.RenderTransform>
                 <ScaleTransform x:Name="StockReportPanelScale" ScaleX="1" ScaleY="1"/>

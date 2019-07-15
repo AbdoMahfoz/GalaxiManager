@@ -221,6 +221,6 @@
                 </Grid>
             </Grid>
         </Grid>
-        <Image HorizontalAlignment="Right" VerticalAlignment="Bottom"  Source="GalaxiManagerWPF/Resources/logo.png" Grid.Column="1" Width="100"/>
+        <Image HorizontalAlignment="Right" VerticalAlignment="Bottom"  Source="Resources/logo.png" Grid.Column="1" Width="100"/>
     </Grid>
 </Window>

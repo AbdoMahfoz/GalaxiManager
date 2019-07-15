@@ -1,0 +1,53 @@
+﻿<Window x:Class="GalaxiManagerWPF.CheckOutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GalaxiManagerWPF"
+        mc:Ignorable="d"
+        Title="Check Out" Height="450" Width="800">
+    <Grid Background="WhiteSmoke">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition Height="6*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Label Content="Client Name:" FontWeight="Bold"/>
+            <Label Name="ClientNameLabel" Content="ActualName"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1">
+            <Label Content="Hours Spent:" FontWeight="Bold"/>
+            <Label Name="HoursSpentLabel" Content="ActualHours"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2">
+            <Label Content="Time Cost:" FontWeight="Bold"/>
+            <Label Name="TimeCostLabel" Content="ActualCost"/>
+        </StackPanel>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Margin="20,20,20,20" Header="Food Items" Grid.Column="2" BorderBrush="Black">
+                <ItemsControl>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="{Binding Name}"/>
+                                <Label Content="{Binding Price}" HorizontalAlignment="Center" Grid.Column="1"/>
+                                <Button Content="Remove" HorizontalAlignment="Right" Margin="0,5,10,5" Grid.Column="2" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </GroupBox>
+        </Grid>
+    </Grid>
+</Window>

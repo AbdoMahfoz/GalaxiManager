@@ -46,6 +46,7 @@ namespace GalaxiManagerWPF
         }
         private async void SearchButtonPressed(object sender, RoutedEventArgs e)
         {
+            bool clientFound = false;
             CheckInSearchButton.IsEnabled = false;
             if(CheckInButton.IsEnabled)
             {
@@ -53,7 +54,7 @@ namespace GalaxiManagerWPF
                 await Task.Delay(500);
             }
             ((Storyboard)InputBorder.Resources["LoadingAnimation"]).Begin();
-            if(!int.TryParse(CheckInSearchText.Text, out int n))
+            if(!int.TryParse(CheckInSearchText.Text, out int n) || n<0)
             {
                 MessageBox.Show("Invalid phone number");
                 ((Storyboard)InputBorder.Resources["LoadingAnimation"]).Stop();
@@ -74,12 +75,20 @@ namespace GalaxiManagerWPF
             }
             else
             {
+                clientFound = true;
                 CheckInHistory lastCheckIn = null;
                 await Task.Run(() =>
                 {
                     lastCheckIn = Galaxi.GetLastCheckin(client);
                 });
-                HasCheckedIn = !lastCheckIn.IsCheckedOut;
+                if (lastCheckIn == null)
+                {
+                    HasCheckedIn = false;
+                }
+                else
+                {
+                    HasCheckedIn = !lastCheckIn.IsCheckedOut;
+                }
                 CheckInClientName.Content = client.Name;
                 CheckInClienYear.Content = client.Year.ToString();
                 CheckInEmail.Content = client.Email;
@@ -87,7 +96,10 @@ namespace GalaxiManagerWPF
                 CheckInStatus.Content = HasCheckedIn ? $"Checked-In at {lastCheckIn.CheckIn.ToShortTimeString()}" : "Not Checked-In";
             }
             CheckInSearchButton.IsEnabled = true;
+            if(clientFound)
             CheckInButton.IsEnabled = true;
+            else
+            CheckInButton.IsEnabled = false;
             ((Storyboard)InputBorder.Resources["LoadingAnimation"]).Stop();
             ((Storyboard)InputBorder.Resources["EndingAnimation"]).Begin();
             if(!HasCheckedIn)
@@ -172,6 +184,11 @@ namespace GalaxiManagerWPF
                 });
                 ObservableCollection<Payment> paymentsList = new ObservableCollection<Payment>();
                 StockReportItems.ItemsSource = paymentsList;
+                if (payments == null)
+                {
+                    MessageBox.Show("No stock Available !");
+                    return;
+                }
                 foreach(Payment payment in payments)
                 {
                     paymentsList.Add(payment);
